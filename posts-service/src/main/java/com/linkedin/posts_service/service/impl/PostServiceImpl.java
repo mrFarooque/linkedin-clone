@@ -1,14 +1,18 @@
 package com.linkedin.posts_service.service.impl;
 
+import com.linkedin.posts_service.auth.UserContextHolder;
 import com.linkedin.posts_service.dto.PostCreateRequestDto;
 import com.linkedin.posts_service.dto.PostDto;
 import com.linkedin.posts_service.entity.Post;
+import com.linkedin.posts_service.event.PostCreatedEvent;
 import com.linkedin.posts_service.exception.ResourceNotFoundException;
 import com.linkedin.posts_service.repository.PostsRepository;
 import com.linkedin.posts_service.service.PostsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,12 +24,25 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostsService {
     private final PostsRepository postsRepository;
     private final ModelMapper modelMapper;
+    private final KafkaTemplate<Long, PostCreatedEvent> kafkaTemplate;
 
-    public PostDto createPost(PostCreateRequestDto postDto, Long userId) {
+    @Value("${kafka.topic.post-created-topic}")
+    public String KAFKA_POST_CREATED_TOPIC;
+
+    public PostDto createPost(PostCreateRequestDto postDto) {
+        Long userId = UserContextHolder.getCurrentUserId();
         Post post = modelMapper.map(postDto, Post.class);
         post.setUserId(userId);
-
         Post savedPost = postsRepository.save(post);
+
+        // produce kafka post-created event
+        PostCreatedEvent postCreatedEvent = PostCreatedEvent.builder()
+                .creatorId(userId)
+                .content(savedPost.getContent())
+                .postId(savedPost.getId())
+                .build();
+        kafkaTemplate.send(KAFKA_POST_CREATED_TOPIC, postCreatedEvent);
+
         return modelMapper.map(savedPost, PostDto.class);
     }
 

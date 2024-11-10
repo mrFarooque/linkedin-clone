@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public interface PostsService {
 
-    PostDto createPost(PostCreateRequestDto postDto, Long userId);
+    PostDto createPost(PostCreateRequestDto postDto);
 
     PostDto getPostById(Long postId);
 

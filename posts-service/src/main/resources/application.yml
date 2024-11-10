@@ -1,0 +1,28 @@
+spring.application.name: posts-service
+
+server:
+  port: 9010
+  servlet.context-path: /posts
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postsDB
+    username: postgres
+    password: mdfa
+
+  jpa.hibernate.ddl-auto: update
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.LongSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+# eureka config
+eureka.client.service-url.defaultZone: http://localhost:8761/eureka
+
+kafka:
+  topic:
+    post-created-topic: post-created-topic
+
+

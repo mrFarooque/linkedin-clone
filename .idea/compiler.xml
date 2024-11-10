@@ -12,6 +12,7 @@
         <module name="connections-service" />
         <module name="user-service" />
         <module name="discovery-server" />
+        <module name="notification-service" />
       </profile>
     </annotationProcessing>
   </component>
@@ -20,6 +21,7 @@
       <module name="api-gateway" options="-parameters" />
       <module name="connections-service" options="-parameters" />
       <module name="discovery-server" options="-parameters" />
+      <module name="notification-service" options="-parameters" />
       <module name="posts-service" options="-parameters" />
       <module name="user-service" options="-parameters" />
     </option>

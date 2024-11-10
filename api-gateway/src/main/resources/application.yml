@@ -1,10 +1,13 @@
 spring.application.name: api-gateway
-server.port: 8080
+server.port: 8800
 # eureka config
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+
+
+jwt.secretKey: asdfladf98a7df89aysf8d9yasiudfha9s87dfa89syudhfa98sdfyaisuhdfa98sfy
 
 spring:
   cloud:
@@ -23,6 +26,7 @@ spring:
             - Path=/api/v1/posts/**
           filters:
             - StripPrefix=2
+            - name: Authentication
 
         - id: connections-service
           uri: lb://CONNECTIONS-SERVICE
@@ -30,3 +34,12 @@ spring:
             - Path=/api/v1/connections/**
           filters:
             - StripPrefix=2
+            - name: Authentication
+
+        - id: notification-service
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/api/v1/notifications/**
+          filters:
+            - StripPrefix=2
+            - name: Authentication
