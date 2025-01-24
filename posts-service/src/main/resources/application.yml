@@ -24,5 +24,6 @@ eureka.client.service-url.defaultZone: http://localhost:8761/eureka
 kafka:
   topic:
     post-created-topic: post-created-topic
+    post-liked-topic: post-liked-topic
 
 

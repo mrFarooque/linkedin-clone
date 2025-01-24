@@ -8,11 +8,14 @@ spring.neo4j:
   uri: bolt://localhost:7687
   authentication:
     username: neo4j
-    password:
+    password: password
 
 spring:
   kafka:
     bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.LongSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     consumer:
       group-id: ${spring.application.name}
       key-deserializer: org.apache.kafka.common.serialization.LongDeserializer

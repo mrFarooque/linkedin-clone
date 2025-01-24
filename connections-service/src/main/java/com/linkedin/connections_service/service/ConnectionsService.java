@@ -2,12 +2,16 @@ package com.linkedin.connections_service.service;
 
 import com.linkedin.connections_service.auth.UserContextHolder;
 import com.linkedin.connections_service.entity.Person;
+import com.linkedin.connections_service.event.AcceptConnectionRequestEvent;
+import com.linkedin.connections_service.event.SendConnectionRequestEvent;
 import com.linkedin.connections_service.repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -15,17 +19,19 @@ import java.util.List;
 public class ConnectionsService {
 
     private final PersonRepository personRepository;
+    private final KafkaTemplate<Long, SendConnectionRequestEvent> sendRequestKafkaTemplate;
+    private final KafkaTemplate<Long, AcceptConnectionRequestEvent> acceptRequestKafkaTemplate;
 
-   public List<Person> getFirstDegreeConnections() {
-      Long userId = UserContextHolder.getCurrentUserId();
-      log.info("Getting first degree connections for user with id: {}", userId);
+    public List<Person> getFirstDegreeConnections() {
+        Long userId = UserContextHolder.getCurrentUserId();
+        log.info("Getting first degree connections for user with id: {}", userId);
 
-      return personRepository.getFirstDegreeConnections(userId);
-   }
+        return personRepository.getFirstDegreeConnections(userId);
+    }
 
-   public void createPerson(Long userId, String name) {
-       personRepository.createPerson(userId, name);
-   }
+    public void createPerson(Long userId, String name) {
+        personRepository.createPerson(userId, name);
+    }
 
     public Person getPersonByName(String name) {
         return personRepository.getByName(name).orElseThrow(()->new RuntimeException("No Person Found with name: " + name));
@@ -52,12 +58,11 @@ public class ConnectionsService {
         log.info("Successfully sent the connection request");
         personRepository.addConnectionRequest(senderId, receiverId);
 
-//        SendConnectionRequestEvent sendConnectionRequestEvent = SendConnectionRequestEvent.builder()
-//                .senderId(senderId)
-//                .receiverId(receiverId)
-//                .build();
-//
-//        sendRequestKafkaTemplate.send("send-connection-request-topic", sendConnectionRequestEvent);
+        SendConnectionRequestEvent sendConnectionRequestEvent = new SendConnectionRequestEvent();
+        sendConnectionRequestEvent.setSenderId(senderId);
+        sendConnectionRequestEvent.setReceiverId(receiverId);
+
+        sendRequestKafkaTemplate.send("send-connection-request-topic", sendConnectionRequestEvent);
 
         return true;
     }
@@ -74,12 +79,11 @@ public class ConnectionsService {
         personRepository.acceptConnectionRequest(senderId, receiverId);
         log.info("Successfully accepted the connection request, sender: {}, receiver: {}", senderId, receiverId);
 
-//        AcceptConnectionRequestEvent acceptConnectionRequestEvent = AcceptConnectionRequestEvent.builder()
-//                .senderId(senderId)
-//                .receiverId(receiverId)
-//                .build();
-//
-//        acceptRequestKafkaTemplate.send("accept-connection-request-topic", acceptConnectionRequestEvent);
+        AcceptConnectionRequestEvent acceptConnectionRequestEvent = new AcceptConnectionRequestEvent();
+                acceptConnectionRequestEvent.setSenderId(senderId);
+                acceptConnectionRequestEvent.setReceiverId(receiverId);
+
+        acceptRequestKafkaTemplate.send("accept-connection-request-topic", acceptConnectionRequestEvent);
         return true;
     }
 

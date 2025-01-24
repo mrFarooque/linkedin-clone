@@ -19,6 +19,6 @@ public class SendNotification {
         notification.setUserId(userId);
 
         notificationRepository.save(notification);
-        log.info("Notification saved for user: {}", userId);
+        log.info("Notification saved for user: {} with message: {}", userId, message);
     }
 }
