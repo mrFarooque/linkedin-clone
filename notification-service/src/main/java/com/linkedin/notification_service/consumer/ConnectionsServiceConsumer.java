@@ -18,8 +18,7 @@ public class ConnectionsServiceConsumer {
     @KafkaListener(topics = "send-connection-request-topic")
     public void handleSendConnectionRequest(SendConnectionRequestEvent sendConnectionRequestEvent) {
         log.info("handle connections: handleSendConnectionRequest: {}", sendConnectionRequestEvent);
-        String message =
-                "You have received a connection request from user with id: %d"+sendConnectionRequestEvent.getSenderId();
+        String message = String.format("You have received a connection request from user with id: %s", sendConnectionRequestEvent.getSenderId());
         sendNotification.send(sendConnectionRequestEvent.getReceiverId(), message);
     }
 

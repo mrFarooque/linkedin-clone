@@ -5,14 +5,14 @@ server:
   port: 9030
 
 spring.neo4j:
-  uri: bolt://localhost:7687
+  uri: bolt://connections-db:7687
   authentication:
     username: neo4j
     password: password
 
 spring:
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: kafka:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.LongSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -24,4 +24,4 @@ spring:
         spring.json:
           trusted.packages: com.linkedin.*
 
-eureka.client.service-url.defaultZone: http://localhost:8761/eureka/
+eureka.client.service-url.defaultZone: http://discovery-server:8761/eureka/
