@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: posts-db
-        image: postgres:16
+        image: postgres
         resources:
           limits:
               memory: "200Mi"
@@ -61,3 +61,4 @@ spec:
   ports:
   - port: 5432
     targetPort: 5432
+    

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: user-db
-        image: postgres:16
+        image: postgres
         resources:
           limits:
               memory: "200Mi"

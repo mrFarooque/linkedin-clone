@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: posts-service
-        image: anuj55149/linkedin-app-posts-service
+        image: farooque85/linkedin-app-posts-service:latest
         resources:
           limits:
             memory: "400Mi"
